@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pdv.nombre }} | Concurso Bénet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="brand-body">
+    <header class="pdv-brand-header">
+        <a href="{{ url_for('inicio') }}" class="back-link">← Cambiar PDV</a>
+        <img src="{{ url_for('recurso_marca', nombre_archivo='LOGO BÉNET.png') }}" alt="Bénet">
+        <span class="header-pill">CONCURSO 2026</span>
+    </header>
+    <main class="pdv-main">
+        <section class="pdv-banner">
+            <span class="eyebrow-brand">TU PUNTO DE VENTA</span>
+            <h1>{{ pdv.nombre }}</h1>
+            <p>Código PDV: <strong>{{ pdv.codigo }}</strong></p>
+        </section>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}<div class="message {{ category }}">{{ message }}</div>{% endfor %}
+        {% endwith %}
+        {% if foto_confirmada %}
+            <section class="selection-status"><span>★</span><div><b>Foto participante confirmada</b><p>{% if concurso.abierto %}Puedes actualizarla hasta el 15 de septiembre.{% else %}Esta es la fotografía participante de tu PDV.{% endif %}</p></div></section>
+        {% endif %}
+        {% if concurso.abierto %}
+            <section class="attempts-panel"><div><span>OPORTUNIDADES DISPONIBLES</span><strong>{{ oportunidades }}</strong><small>de {{ fotos|length + oportunidades }} fotografías</small></div><div class="attempt-dots">{% for i in range(1, 6) %}<i class="{% if i <= fotos|length %}used{% endif %}">{{ i }}</i>{% endfor %}</div></section>
+            {% if oportunidades > 0 %}
+                <section class="upload-panel">
+                    <div class="panel-heading"><span>02</span><div><h2>Sube tu mejor foto</h2><p>Tu exhibición puede estar en mostrador, balcón de ofertas o módulo de caja.</p></div></div>
+                    <form action="{{ url_for('subir_foto', pdv_id=pdv.id) }}" method="POST" enctype="multipart/form-data">
+                        <label class="photo-picker" for="foto"><span>📸</span><b>TOMAR O SELECCIONAR FOTO</b><small>JPG, PNG o WEBP · máximo 10 MB</small></label>
+                        <input type="file" id="foto" name="foto" accept="image/*" capture="environment" required hidden>
+                        <div id="preview" class="preview"></div><button class="brand-button" type="submit">SUBIR MI FOTO →</button>
+                    </form>
+                </section>
+            {% endif %}
+        {% endif %}
+        {% if fotos %}
+            <section class="photo-section"><div class="panel-heading"><span>03</span><div><h2>Tus fotografías</h2><p>Selecciona la fotografía con la que quieres participar.</p></div></div>
+                <div class="photos-grid">
+                    {% for foto in fotos %}
+                        <article class="photo-card {% if foto.seleccionada %}favorite{% endif %} {% if foto.confirmada %}confirmed{% endif %}">
+                            <div class="photo-number">FOTO {{ foto.intento }}{% if foto.confirmada %}<em>PARTICIPANTE</em>{% endif %}</div>
+                            <img src="{{ url_for('mostrar_foto', nombre_archivo=foto.archivo) }}" alt="Fotografía {{ foto.intento }}">
+                            <div class="photo-meta">{{ foto.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</div>
+                            {% if concurso.abierto %}<form action="{{ url_for('seleccionar_foto', pdv_id=pdv.id, foto_id=foto.id) }}" method="POST"><button class="select-button {% if foto.seleccionada %}selected{% endif %}" type="submit">{% if foto.seleccionada %}★ MI FAVORITA{% else %}ELEGIR ESTA{% endif %}</button></form>{% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+            {% set favorita = fotos | selectattr('seleccionada', 'equalto', 1) | list %}
+            {% if favorita and concurso.abierto %}
+                <section class="confirm-panel"><div><span>✦ FOTO FINAL</span><h2>¿Lista para participar?</h2><p>Podrás actualizar esta elección hasta el 15 de septiembre.</p></div><form action="{{ url_for('confirmar_participacion', pdv_id=pdv.id) }}" method="POST" onsubmit="return confirm('¿Deseas usar esta fotografía para participar?');"><button class="brand-button green" type="submit">{% if foto_confirmada %}ACTUALIZAR FOTO PARTICIPANTE{% else %}CONFIRMAR PARTICIPACIÓN{% endif %}</button></form></section>
+            {% endif %}
+        {% endif %}
+        {% if not concurso.abierto %}<section class="closed-panel"><span>📅</span><h2>El concurso ha cerrado</h2><p>La carga y modificación de fotografías estuvo disponible del 25 de agosto al 15 de septiembre.</p></section>{% endif %}
+    </main>
+    <footer class="brand-footer"><img src="{{ url_for('recurso_marca', nombre_archivo='LOGO BÉNET.png') }}" alt="Bénet"><span>Con Bénet tú decides cómo cuidarte.</span></footer>
+    <script>
+        const foto = document.getElementById('foto'); const preview = document.getElementById('preview');
+        if (foto) foto.addEventListener('change', function () { preview.innerHTML = ''; if (this.files && this.files[0]) { const imagen = document.createElement('img'); imagen.src = URL.createObjectURL(this.files[0]); imagen.className = 'preview-image'; preview.appendChild(imagen); } });
+    </script>
+</body>
+</html>

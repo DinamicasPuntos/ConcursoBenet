@@ -1,0 +1,7 @@
+Flask
+PyMySQL
+Pillow
+openpyxl
+Werkzeug
+gunicorn
+pandas

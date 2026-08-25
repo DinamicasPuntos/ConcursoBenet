@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nutresa | Concurso Bénet</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body class="ops-body">
+    <header class="ops-header"><div class="ops-brand"><img src="{{ url_for('recurso_marca', nombre_archivo='LOGO BÉNET.png') }}" alt="Bénet"><span>CONCURSO DE EXHIBICIÓN<br>Panel Nutresa</span></div><div class="ops-user"><div><b>{{ laboratorio_nombre }}</b><small>LABORATORIO</small></div><a class="ops-logout" href="{{ url_for('admin_logout') }}">CERRAR SESIÓN</a></div></header>
+    <main class="ops-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="message {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+        <section class="ops-intro"><div><h1>Selección de ganadores</h1><p>Visualiza únicamente las fotografías confirmadas y asigna los cinco puestos ganadores.</p></div><span class="ops-badge ok">{{ participantes|length }} PARTICIPACIONES</span></section>
+        <section class="lab-winners">
+            {% for puesto in range(1, 6) %}{% set elegido = ganadores | selectattr('posicion', 'equalto', puesto) | list %}<article class="lab-place"><b>PUESTO {{ puesto }}</b><span>{% if elegido %}{{ elegido[0].nombre }}<br><small>{{ elegido[0].codigo }}</small>{% else %}Sin asignar{% endif %}</span></article>{% endfor %}
+        </section>
+        <section class="ops-card"><div class="ops-card-head"><div><h2>Fotos participantes</h2><p>Haz clic en una foto para ampliarla; cada PDV solo puede ocupar un puesto.</p></div></div>
+            {% if participantes %}<div class="lab-grid">
+                {% for participante in participantes %}<article class="lab-photo {% if participante.posicion_ganadora %}winner{% endif %}">
+                    <img src="{{ url_for('mostrar_foto', nombre_archivo=participante.archivo) }}" alt="Foto participante de {{ participante.nombre }}" onclick="abrirImagen(this.src)">
+                    <div class="lab-photo-content"><div class="ops-code">{{ participante.codigo }}</div><h3>{{ participante.nombre }}</h3><p>{{ participante.regional or '' }}{% if participante.ciudad %} · {{ participante.ciudad }}{% endif %}</p>{% if participante.posicion_ganadora %}<span class="lab-mark">GANADOR · PUESTO {{ participante.posicion_ganadora }}</span>{% endif %}
+                    <form action="{{ url_for('guardar_ganador', foto_id=participante.foto_id) }}" method="POST"><select name="posicion" required><option value="">Asignar puesto...</option>{% for puesto in range(1, 6) %}<option value="{{ puesto }}" {% if participante.posicion_ganadora == puesto %}selected{% endif %}>Puesto {{ puesto }}</option>{% endfor %}</select><button type="submit">GUARDAR</button></form></div>
+                </article>{% endfor %}
+            </div>{% else %}<div class="ops-empty"><span>📸</span><h3>Aún no hay fotos confirmadas</h3><p>Las participaciones aparecerán aquí cuando los PDV confirmen su fotografía.</p></div>{% endif %}
+        </section>
+    </main>
+    <div class="ops-modal" id="modal" onclick="cerrarImagen()"><img id="imagenModal" alt="Fotografía ampliada" onclick="event.stopPropagation()"></div>
+    <script>function abrirImagen(url){document.getElementById('imagenModal').src=url;document.getElementById('modal').classList.add('active')}function cerrarImagen(){document.getElementById('modal').classList.remove('active')}</script>
+</body>
+</html>

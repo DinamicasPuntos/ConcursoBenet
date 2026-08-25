@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Administración | Concurso Bénet</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body class="ops-body">
+    <header class="ops-header">
+        <div class="ops-brand"><img src="{{ url_for('recurso_marca', nombre_archivo='LOGO BÉNET.png') }}" alt="Bénet"><span>CONCURSO DE EXHIBICIÓN<br>Panel de administración</span></div>
+        <div class="ops-user"><div><b>{{ admin_nombre }}</b><small>{{ admin_rol }}</small></div><a class="ops-logout" href="{{ url_for('admin_logout') }}">CERRAR SESIÓN</a></div>
+    </header>
+    <main class="ops-main">
+        <section class="ops-intro"><div><h1>Resumen del concurso</h1><p>Consulta en tiempo real las participaciones enviadas por los PDV.</p></div><span class="ops-badge ok">CONCURSO ACTIVO</span></section>
+        <section class="ops-stats">
+            <article class="ops-stat"><div class="ops-stat-icon">🏪</div><b>{{ total_pdvs }}</b><span>PDV activos</span></article>
+            <article class="ops-stat"><div class="ops-stat-icon">📸</div><b>{{ pdvs_con_fotos }}</b><span>PDV con fotografías</span></article>
+            <article class="ops-stat"><div class="ops-stat-icon">▣</div><b>{{ total_fotos }}</b><span>Fotografías recibidas</span></article>
+            <article class="ops-stat"><div class="ops-stat-icon">★</div><b>{{ confirmados }}</b><span>Participaciones confirmadas</span></article>
+        </section>
+        <section class="ops-card">
+            <div class="ops-card-head"><div><h2>Participaciones</h2><p>Revisa cada envío y su estado de confirmación.</p></div><a class="ops-export" href="{{ url_for('admin_exportar') }}">↓ EXPORTAR CSV</a></div>
+            {% if participaciones %}
+                <div class="ops-table-wrap"><table class="ops-table"><thead><tr><th>PDV</th><th>NOMBRE</th><th>CIUDAD</th><th>REGIONAL</th><th>FOTOS</th><th>ÚLTIMA FOTO</th><th>ESTADO</th><th></th></tr></thead><tbody>
+                {% for participacion in participaciones %}<tr><td class="ops-code">{{ participacion.codigo }}</td><td>{{ participacion.nombre }}</td><td>{{ participacion.ciudad or '-' }}</td><td>{{ participacion.regional or '-' }}</td><td><b>{{ participacion.total_fotos }}</b></td><td>{{ participacion.ultima_foto }}</td><td>{% if participacion.confirmado %}<span class="ops-badge ok">CONFIRMADO</span>{% else %}<span class="ops-badge wait">PENDIENTE</span>{% endif %}</td><td><a class="ops-view" href="{{ url_for('admin_pdv', pdv_id=participacion.id) }}">VER FOTOS →</a></td></tr>{% endfor %}
+                </tbody></table></div>
+            {% else %}<div class="ops-empty"><span>📷</span><h3>Aún no hay participaciones</h3><p>Las fotografías de los PDV aparecerán aquí.</p></div>{% endif %}
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,8 @@
+.env
+venv/
+__pycache__/
+uploads/
+*.pyc
+*.zip
+*.xlsx
+img/KEYVISUAL DE LOS PRODUCTOS.PNG

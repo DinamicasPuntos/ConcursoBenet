@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administración | Concurso Exhibición Nutresa</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at 85% 10%, rgba(255, 0, 132, .45), transparent 30%),
+                radial-gradient(circle at 10% 90%, rgba(98, 0, 255, .45), transparent 35%),
+                linear-gradient(135deg, #24005c, #5b08a8, #d41478);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .tarjeta {
+            background: rgba(255, 255, 255, .97);
+            border-radius: 30px;
+            padding: 45px 40px;
+            box-shadow: 0 25px 70px rgba(0,0,0,.30);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 58px;
+            font-weight: 900;
+            color: #1746a2;
+            letter-spacing: -4px;
+            margin-bottom: 8px;
+        }
+
+        .etiqueta {
+            display: inline-block;
+            background: linear-gradient(90deg, #4b0ba8, #8b21d2);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #4810a0;
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .descripcion {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .campo {
+            text-align: left;
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #46109a;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid #eee0ff;
+            border-radius: 14px;
+            font-size: 16px;
+            outline: none;
+            transition: .2s;
+        }
+
+        input:focus {
+            border-color: #7118ca;
+            box-shadow: 0 0 0 4px rgba(113,24,202,.10);
+        }
+
+        button {
+            width: 100%;
+            border: none;
+            border-radius: 15px;
+            padding: 17px;
+            margin-top: 8px;
+            background: linear-gradient(90deg, #4d0ca8, #7d19d1);
+            color: white;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(92,20,170,.30);
+            transition: .2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(92,20,170,.40);
+        }
+
+        .error {
+            background: #ffe7ed;
+            color: #b00035;
+            padding: 13px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .candado {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        .pie {
+            margin-top: 25px;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .decoracion {
+            position: fixed;
+            font-size: 45px;
+            opacity: .8;
+        }
+
+        .uno {
+            top: 8%;
+            left: 8%;
+        }
+
+        .dos {
+            bottom: 8%;
+            right: 8%;
+        }
+
+        @media(max-width: 500px) {
+            .tarjeta {
+                padding: 35px 25px;
+            }
+
+            .logo {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="decoracion uno">✨</div>
+    <div class="decoracion dos">🏆</div>
+
+    <div class="contenedor">
+
+        <div class="tarjeta">
+
+            <div class="logo">Bénet</div>
+
+            <div class="etiqueta">
+                CONCURSO EXHIBICIÓN NUTRESA
+            </div>
+
+            <div class="candado">🔐</div>
+
+            <h1>Panel Administrativo</h1>
+
+            <p class="descripcion">
+                Ingresa para consultar las participaciones,
+                fotografías y resultados del concurso.
+            </p>
+
+            {% if error %}
+                <div class="error">
+                    ⚠️ {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+
+                <div class="campo">
+                    <label for="usuario">
+                        👤 Usuario
+                    </label>
+
+                    <input
+                        type="text"
+                        id="usuario"
+                        name="usuario"
+                        placeholder="Ingresa tu usuario"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="password">
+                        🔑 Contraseña
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Ingresa tu contraseña"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button type="submit">
+                    INGRESAR AL PANEL →
+                </button>
+
+            </form>
+
+            <div class="pie">
+                Concurso Exhibición Nutresa · 25 de agosto al 15 de septiembre
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

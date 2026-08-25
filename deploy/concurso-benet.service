@@ -1,0 +1,13 @@
+[Unit]
+Description=Concurso Benet Flask
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/var/www/concurso-benet/backend
+EnvironmentFile=/var/www/concurso-benet/backend/.env
+ExecStart=/var/www/concurso-benet/backend/.venv/bin/gunicorn --workers 2 --bind 127.0.0.1:5010 app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

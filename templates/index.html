@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concurso Bénet | Comparte tu mejor exhibición</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="brand-body">
+    <main class="landing">
+        <section class="brand-hero">
+            <div class="hero-glow glow-one"></div><div class="hero-glow glow-two"></div>
+            <header class="brand-header">
+                <img class="brand-logo" src="{{ url_for('recurso_marca', nombre_archivo='LOGO BÉNET.png') }}" alt="Bénet">
+                <span class="header-pill">CONCURSO DE EXHIBICIÓN</span>
+            </header>
+            <div class="hero-grid">
+                <div class="hero-copy">
+                    <span class="eyebrow-brand">25 AGO — 15 SEP</span>
+                    <h1>Tu exhibición puede ser <em>la ganadora</em></h1>
+                    <p>Arma una exhibición increíble de Bénet, toma tu mejor foto y participa por una canasta espectacular.</p>
+                    <div class="hero-benefits"><span>✦ Hasta 5 oportunidades</span><span>✦ Mostrador, balcón o caja</span></div>
+                </div>
+                <div class="hero-poster-wrap"><img class="hero-poster" src="{{ url_for('recurso_marca', nombre_archivo='CONCURSO BENET AGOSTO PDV MOVIL.png') }}" alt="Concurso Bénet: comparte tu mejor exhibición"></div>
+            </div>
+        </section>
+        <section class="search-section">
+            <div class="section-kicker">PASO 1</div>
+            <div class="search-card">
+                <div class="search-title"><span class="search-icon">⌕</span><div><h2>Encuentra tu punto de venta</h2><p>Busca por nombre, código o comercial para comenzar.</p></div></div>
+                <label class="brand-search" for="buscar"><span>🔎</span><input type="text" id="buscar" placeholder="Escribe el nombre o código de tu PDV" autocomplete="off"></label>
+                <div id="resultados" class="results"><div class="empty-state"><span>✨</span><p>Empieza escribiendo el nombre de tu PDV.</p></div></div>
+            </div>
+        </section>
+        <section class="product-strip"><img src="{{ url_for('recurso_marca', nombre_archivo='PRODUCTOS PROTAGONISTAS BÉNET.png') }}" alt="Productos protagonistas Bénet"></section>
+        <section class="steps-section">
+            <div class="section-kicker">ASÍ PARTICIPAS</div><h2>Haz que tu exhibición brille</h2>
+            <div class="steps-grid"><article><b>01</b><span>Encuentra tu PDV</span></article><article><b>02</b><span>Sube hasta 5 fotografías</span></article><article><b>03</b><span>Elige tu favorita</span></article><article><b>04</b><span>Confirma y participa</span></article></div>
+        </section>
+    </main>
+    <footer class="brand-footer"><img src="{{ url_for('recurso_marca', nombre_archivo='LOGO BÉNET.png') }}" alt="Bénet"><span>Con Bénet tú decides cómo cuidarte.</span></footer>
+    <script>
+        const buscador = document.getElementById('buscar');
+        const resultados = document.getElementById('resultados');
+        let temporizador;
+        buscador.addEventListener('input', function () {
+            clearTimeout(temporizador); const texto = this.value.trim();
+            if (texto.length < 2) { resultados.innerHTML = '<div class="empty-state"><span>⌕</span><p>Escribe al menos 2 caracteres.</p></div>'; return; }
+            temporizador = setTimeout(function () {
+                fetch('/buscar-pdv?q=' + encodeURIComponent(texto)).then(response => response.json()).then(data => {
+                    resultados.innerHTML = '';
+                    if (!data.pdvs || data.pdvs.length === 0) { resultados.innerHTML = '<div class="empty-state"><span>✦</span><p>No encontramos ese PDV.</p></div>'; return; }
+                    data.pdvs.forEach(function (pdv) {
+                        const tarjeta = document.createElement('a'); tarjeta.href = '/pdv/' + pdv.id; tarjeta.className = 'pdv-result';
+                        tarjeta.innerHTML = '<span class="pdv-result-icon">⌖</span><span class="pdv-info"><strong>' + pdv.nombre + '</strong><small>Código ' + pdv.codigo + (pdv.regional ? ' · ' + pdv.regional : '') + '</small></span><span class="result-arrow">→</span>';
+                        resultados.appendChild(tarjeta);
+                    });
+                }).catch(function () { resultados.innerHTML = '<div class="empty-state"><span>!</span><p>No fue posible realizar la búsqueda.</p></div>'; });
+            }, 250);
+        });
+    </script>
+</body>
+</html>
