@@ -9,3 +9,4 @@ async function ganador(id,posicion){if(!posicion)return;const r=await fetch(API+
 formulario.addEventListener('submit',async e=>{e.preventDefault();mensaje.textContent='Validando acceso...';try{const datos=new FormData(formulario);const r=await fetch(API+'/api/laboratorio/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario:datos.get('usuario'),password:datos.get('password')})});const respuesta=await r.json();if(!r.ok){mensaje.textContent=respuesta.error||'No fue posible ingresar.';return;}token=respuesta.token;sessionStorage.setItem('benetNutresa',token);cargar();}catch(e){mensaje.textContent='No fue posible conectar con el servidor. Intenta nuevamente.';}});
 
 </script></body></html>
+<script src="assets/nutresa-login.js"></script>
