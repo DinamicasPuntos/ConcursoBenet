@@ -1,27 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Administración | Concurso Bénet</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
-<body class="ops-body">
-    <header class="ops-header">
-        <div class="ops-brand"><img src="{{ url_for('recurso_marca', nombre_archivo='LOGO BÉNET.png') }}" alt="Bénet"><span>CONCURSO DE EXHIBICIÓN<br>Panel de administración</span></div>
-        <div class="ops-user"><div><b>{{ admin_nombre }}</b><small>{{ admin_rol }}</small></div><a class="ops-logout" href="{{ url_for('admin_logout') }}">CERRAR SESIÓN</a></div>
-    </header>
-    <main class="ops-main">
-        <section class="ops-intro"><div><h1>Resumen del concurso</h1><p>Consulta en tiempo real las participaciones enviadas por los PDV.</p></div><span class="ops-badge ok">CONCURSO ACTIVO</span></section>
-        <section class="ops-stats">
-            <article class="ops-stat"><div class="ops-stat-icon">🏪</div><b>{{ total_pdvs }}</b><span>PDV activos</span></article>
-            <article class="ops-stat"><div class="ops-stat-icon">📸</div><b>{{ pdvs_con_fotos }}</b><span>PDV con fotografías</span></article>
-            <article class="ops-stat"><div class="ops-stat-icon">▣</div><b>{{ total_fotos }}</b><span>Fotografías recibidas</span></article>
-            <article class="ops-stat"><div class="ops-stat-icon">★</div><b>{{ confirmados }}</b><span>Participaciones confirmadas</span></article>
-        </section>
-        <section class="ops-card">
-            <div class="ops-card-head"><div><h2>Participaciones</h2><p>Revisa cada envío y su estado de confirmación.</p></div><a class="ops-export" href="{{ url_for('admin_exportar') }}">↓ EXPORTAR CSV</a></div>
-            {% if participaciones %}
-                <div class="ops-table-wrap"><table class="ops-table"><thead><tr><th>PDV</th><th>NOMBRE</th><th>CIUDAD</th><th>REGIONAL</th><th>FOTOS</th><th>ÚLTIMA FOTO</th><th>ESTADO</th><th></th></tr></thead><tbody>
-                {% for participacion in participaciones %}<tr><td class="ops-code">{{ participacion.codigo }}</td><td>{{ participacion.nombre }}</td><td>{{ participacion.ciudad or '-' }}</td><td>{{ participacion.regional or '-' }}</td><td><b>{{ participacion.total_fotos }}</b></td><td>{{ participacion.ultima_foto }}</td><td>{% if participacion.confirmado %}<span class="ops-badge ok">CONFIRMADO</span>{% else %}<span class="ops-badge wait">PENDIENTE</span>{% endif %}</td><td><a class="ops-view" href="{{ url_for('admin_pdv', pdv_id=participacion.id) }}">VER FOTOS →</a></td></tr>{% endfor %}
-                </tbody></table></div>
-            {% else %}<div class="ops-empty"><span>📷</span><h3>Aún no hay participaciones</h3><p>Las fotografías de los PDV aparecerán aquí.</p></div>{% endif %}
-        </section>
-    </main>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Centro de control | B&eacute;net</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="admin-control-body">
+  <header class="control-header">
+    <a class="control-brand" href="{{ url_for('admin_dashboard') }}">
+      <img src="{{ url_for('recurso_marca', nombre_archivo='LOGO BÉNET.png') }}" alt="B&eacute;net">
+      <span><b>CONCURSO DE EXHIBICI&Oacute;N</b><small>Centro de control</small></span>
+    </a>
+    <div class="control-user"><span class="control-avatar">{{ admin_nombre[:1]|upper }}</span><div><b>{{ admin_nombre }}</b><small>Administrador</small></div><a href="{{ url_for('admin_logout') }}">Salir</a></div>
+  </header>
+
+  <main class="control-main">
+    <section class="control-hero">
+      <div><span class="control-kicker"><i></i> CONCURSO ACTIVO</span><h1>Todo el concurso,<br><em>bajo control.</em></h1><p>Monitorea las participaciones y confirma que cada exhibici&oacute;n llegue a la etapa de selecci&oacute;n.</p></div>
+      <div class="control-actions"><a class="control-export" href="{{ url_for('admin_exportar') }}">Descargar reporte <span>&darr;</span></a><a class="control-refresh" href="{{ url_for('admin_dashboard') }}">Actualizar</a></div>
+    </section>
+
+    <section class="control-metrics" aria-label="Resumen del concurso">
+      <article><span class="metric-icon blue">&#8982;</span><small>PDV activos</small><strong>{{ total_pdvs }}</strong><p>Disponibles para participar</p></article>
+      <article><span class="metric-icon yellow">&#9678;</span><small>PDV con fotos</small><strong>{{ pdvs_con_fotos }}</strong><p>Ya iniciaron su participaci&oacute;n</p></article>
+      <article><span class="metric-icon pink">&#9641;</span><small>Fotos recibidas</small><strong>{{ total_fotos }}</strong><p>Registros totales de la din&aacute;mica</p></article>
+      <article><span class="metric-icon green">&#9733;</span><small>Confirmadas</small><strong>{{ confirmados }}</strong><p>Listas para que Nutresa eval&uacute;e</p></article>
+    </section>
+
+    <section class="control-content">
+      <div class="control-panel-head"><div><span class="control-kicker muted">SEGUIMIENTO</span><h2>Participaciones de los PDV</h2><p>Consulta el avance y abre el detalle fotogr&aacute;fico de cada punto de venta.</p></div><span class="control-count">{{ participaciones|length }} PDV</span></div>
+      <div class="control-table-wrap">
+        <table class="control-table"><thead><tr><th>PDV</th><th>Punto de venta</th><th>Regional</th><th>Fotos</th><th>Estado</th><th></th></tr></thead>
+        <tbody>{% for participacion in participaciones %}<tr>
+          <td><span class="table-code">{{ participacion.codigo }}</span></td>
+          <td><b>{{ participacion.nombre }}</b><small>{{ participacion.ciudad or 'Sin ciudad registrada' }}</small></td>
+          <td>{{ participacion.regional or '-' }}</td>
+          <td><span class="photo-total">{{ participacion.total_fotos }}</span></td>
+          <td>{% if participacion.confirmado %}<span class="status-chip ready">Confirmada</span>{% elif participacion.total_fotos %}<span class="status-chip progress">Pendiente</span>{% else %}<span class="status-chip idle">Sin env&iacute;os</span>{% endif %}</td>
+          <td><a class="row-link" href="{{ url_for('admin_pdv', pdv_id=participacion.id) }}">Ver detalle <span>&rarr;</span></a></td>
+        </tr>{% endfor %}</tbody></table>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
