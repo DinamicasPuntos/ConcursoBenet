@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS ganadores_concurso (
 INSERT INTO usuarios_admin
 (usuario, nombre, password_hash, rol)
 VALUES
-('admin', 'Administrador Concurso Bénet', 'de8721f0f75dad5f31781dded5ecbc3e795eccbfedd5d80595ee48d9465500fb', 'ADMIN')
+('16509', 'Administrador Concurso Bénet', 'c3085c8ffc58d45ac1cd99d72d494e2909ad66745ea4d5cb64d3794a16760c4d', 'ADMIN')
 ON DUPLICATE KEY UPDATE
 nombre = VALUES(nombre),
 rol = VALUES(rol),
