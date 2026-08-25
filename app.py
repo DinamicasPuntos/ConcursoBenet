@@ -155,10 +155,11 @@ def token_laboratorio():
 
 def laboratorio_api_autorizado():
     encabezado = request.headers.get("Authorization", "")
-    if not encabezado.startswith("Bearer "):
+    token = encabezado[7:] if encabezado.startswith("Bearer ") else request.form.get("token", "")
+    if not token:
         return None
     try:
-        datos = token_laboratorio().loads(encabezado[7:], max_age=60 * 60 * 12)
+        datos = token_laboratorio().loads(token, max_age=60 * 60 * 12)
         return datos if datos.get("rol") == "LABORATORIO" else None
     except BadSignature:
         return None
@@ -266,7 +267,7 @@ def api_laboratorio_login():
         return jsonify({"error": str(error)}), 500
 
 
-@app.route("/api/laboratorio/participantes", methods=["GET", "OPTIONS"])
+@app.route("/api/laboratorio/participantes", methods=["GET", "POST", "OPTIONS"])
 def api_laboratorio_participantes():
     if request.method == "OPTIONS":
         return "", 204
@@ -292,7 +293,7 @@ def api_laboratorio_ganador(foto_id):
     usuario = laboratorio_api_autorizado()
     if not usuario:
         return jsonify({"error": "No autorizado"}), 401
-    datos = request.get_json(silent=True) or {}
+    datos = request.get_json(silent=True) or request.form
     try:
         posicion = int(datos.get("posicion", 0))
         if posicion not in range(1, 6):
