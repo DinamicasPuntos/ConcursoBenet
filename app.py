@@ -170,7 +170,7 @@ def permitir_frontend_externo(respuesta):
     origen = request.headers.get("Origin")
     if origen == "https://dinamicaspuntos.github.io":
         respuesta.headers["Access-Control-Allow-Origin"] = origen
-        respuesta.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
+        respuesta.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, ngrok-skip-browser-warning"
         respuesta.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return respuesta
 
