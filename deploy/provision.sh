@@ -23,7 +23,7 @@ BENET_DB_USER=benet_app
 BENET_DB_PASSWORD=${DB_PASSWORD}
 BENET_DB_NAME=concurso_benet
 BENET_SECRET_KEY=${APP_SECRET}
-BENET_API_PUBLIC_BASE=https://dinamicas-back.duckdns.org/concurso-benet-api
+BENET_API_PUBLIC_BASE=https://vague-monika-preimportantly.ngrok-free.dev/concurso-benet-api
 EOF
 
 mysql -u benet_app -p"${DB_PASSWORD}" concurso_benet < deploy/schema.sql
