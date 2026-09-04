@@ -927,6 +927,34 @@ def seleccionar_foto(
 # CONFIRMAR PARTICIPACIÓN
 # ==========================================================
 
+@app.route("/api/pdv/<int:pdv_id>/confirmar", methods=["POST", "OPTIONS"])
+def api_confirmar_participacion(pdv_id):
+    if request.method == "OPTIONS":
+        return "", 204
+    if not concurso_abierto():
+        return jsonify({"error": "La selección final cerró el 15 de septiembre."}), 403
+    try:
+        conexion = conectar_mysql()
+        with conexion.cursor() as cursor:
+            cursor.execute("SELECT id FROM fotos WHERE pdv_id=%s AND seleccionada=1 LIMIT 1", (pdv_id,))
+            foto = cursor.fetchone()
+            if not foto:
+                conexion.close()
+                return jsonify({"error": "Primero debes seleccionar tu fotografía favorita."}), 400
+            cursor.execute("UPDATE fotos SET confirmada=0 WHERE pdv_id=%s", (pdv_id,))
+            cursor.execute("UPDATE fotos SET confirmada=1 WHERE id=%s AND pdv_id=%s", (foto["id"], pdv_id))
+            conexion.commit()
+        conexion.close()
+        return jsonify({"ok": True, "mensaje": "Tu fotografía participante fue confirmada correctamente."})
+    except Exception as error:
+        try:
+            conexion.rollback()
+            conexion.close()
+        except Exception:
+            pass
+        return jsonify({"error": f"No fue posible confirmar la participación: {error}"}), 500
+
+
 @app.route(
     "/pdv/<int:pdv_id>/confirmar",
     methods=["POST"]
